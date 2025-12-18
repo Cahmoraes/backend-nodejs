@@ -251,6 +251,11 @@ const functions = {
     const body = await response.json()
     console.table(body)
   },
+  async ataque() {
+    for (let i = 0; i < 10; i++) {
+      fetch(`${base}/limit`)
+    }
+  },
 }
 
 if (process.argv[2]) {

@@ -1,3 +1,4 @@
+import { rateLimit } from "../../core/middleware/rate-limit.ts"
 import { Api } from "../../core/utils/abstract.ts"
 import { RouteError } from "../../core/utils/route-error.ts"
 import { v } from "../../core/utils/validate.ts"
@@ -159,8 +160,12 @@ export class AuthApi extends Api {
   }
 
   protected routes(): void {
-    this.router.post("/auth/user", this.handlers.postUser)
-    this.router.post("/auth/login", this.handlers.postLogin)
+    this.router.post("/auth/user", this.handlers.postUser, [
+      rateLimit(30_000, 15),
+    ])
+    this.router.post("/auth/login", this.handlers.postLogin, [
+      rateLimit(30_000, 5),
+    ])
     this.router.get("/auth/session", this.handlers.getSession, [
       this.auth.guard("user"),
     ])
@@ -168,7 +173,11 @@ export class AuthApi extends Api {
     this.router.put("/auth/password/update", this.handlers.passwordUpdate, [
       this.auth.guard("user"),
     ])
-    this.router.post("/auth/password/forgot", this.handlers.passwordForgot)
-    this.router.post("/auth/password/reset", this.handlers.passwordReset)
+    this.router.post("/auth/password/forgot", this.handlers.passwordForgot, [
+      rateLimit(30_000, 5),
+    ])
+    this.router.post("/auth/password/reset", this.handlers.passwordReset, [
+      rateLimit(30_000, 5),
+    ])
   }
 }

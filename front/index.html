@@ -63,6 +63,11 @@
     }
   </style>
 
+  <form id="upload">
+    <input type="file" name="file" multiple>
+    <button>Upload</button>
+  </form>
+
   <form id="login">
     <label for="email">Email</label>
     <input type="email" name="email" id="email" value="caique@email.com" />
@@ -103,6 +108,24 @@
     const resetPassword = document.querySelector("#reset-password")
     const result = document.querySelector("#result")
     const logout = document.querySelector("#logout")
+    const upload = document.querySelector("#upload")
+
+    upload.addEventListener("submit", async (e) => {
+      e.preventDefault()
+      const input = upload.querySelector("input[type=file]")
+      const files = input.files
+      if (!files || files.length === 0) return
+      for (const file of files) {
+        await fetch("/files", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/octet-stream",
+            "x-filename": file.name
+          },
+          body: file,
+        })
+      }
+    })
 
     login.addEventListener("submit", async (e) => {
       e.preventDefault()

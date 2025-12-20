@@ -65,6 +65,12 @@ function required<Value>(fn: Parse<Value>, error: string) {
   }
 }
 
+function file(x: unknown) {
+  if (typeof x !== "string" || x.trim().length === 0) return undefined
+  const file_re = /^(?!\.)[A-Za-z0-9._-]+$/
+  return file_re.test(x) ? x : undefined
+}
+
 export const v = {
   string: required(string, "string esperada"),
   number: required(number, "número esperado"),
@@ -72,6 +78,7 @@ export const v = {
   object: required(object, "objeto esperado"),
   email: required(email, "email inválido"),
   password: required(password, "password inválido"),
+  file: required(file, "nome de arquivo inválido"),
   o: {
     string,
     number,
@@ -79,5 +86,6 @@ export const v = {
     object,
     email,
     password,
+    file,
   },
 }

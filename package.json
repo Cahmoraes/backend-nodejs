@@ -2,13 +2,16 @@
 	"type": "module",
 	"scripts": {
 		"start": "node --no-warnings --watch index.ts",
-		"client": "node --no-warnings --watch client.ts"
+		"client": "node --no-warnings --watch client.ts",
+		"knip": "knip"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.3.8",
 		"@types/node": "24.10.1",
 		"@types/prompt": "1.1.9",
-		"tsc-alias": "1.8.16"
+		"knip": "5.76.0",
+		"tsc-alias": "1.8.16",
+		"typescript": "5.9.3"
 	},
 	"dependencies": {
 		"lru-cache": "11.2.4",

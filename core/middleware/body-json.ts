@@ -1,7 +1,7 @@
 import type { Middleware } from "../router.ts"
 import { RouteError } from "../utils/route-error.ts"
 
-const MAX_BYTES = 5_000_000
+const MAX_BYTES = 1_000_000
 
 export const bodyJSON: Middleware = async (req, _res) => {
   const contentType = req.headers["content-type"]

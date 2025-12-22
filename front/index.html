@@ -470,6 +470,7 @@
           badge.innerText = `${response.status} - ${body?.title}`
           badge.classList.add("fail")
           console.log(response)
+          user = body.role
         } finally {
           form.append(badge)
           setTimeout(() => {

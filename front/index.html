@@ -1,218 +1,493 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiny LMS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cardo&display=swap"
+      rel="stylesheet"
+    >
+  </head>
+  <body>
+    <h1>Tiny LMS</h1>
+    <div class="container">
+      <nav data-role="public">
+        <ul>
+          <li>
+            <a href="#/login">Login</a>
+          </li>
+          <li>
+            <a href="#/criar-conta">Criar</a>
+          </li>
+        </ul>
+      </nav>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tiny LMS</title>
-</head>
+      <nav data-role="user">
+        <ul>
+          <li>
+            <a href="#/cursos">Cursos</a>
+          </li>
+          <li>
+            <a href="#/certificados">Certificados</a>
+          </li>
+          <li>
+            <a href="#/sair">Sair</a>
+          </li>
+        </ul>
+      </nav>
 
-<body>
-  <style>
+      <nav data-role="admin">
+        <ul>
+          <li>
+            <a href="#/criar-curso">Cursos</a>
+          </li>
+          <li>
+            <a href="#/criar-aula">Aulas</a>
+          </li>
+          <li>
+            <a href="#/usuarios">Users</a>
+          </li>
+          <li>
+            <a href="#/sair">Sair</a>
+          </li>
+        </ul>
+      </nav>
+
+      <section id="login" data-role="public">
+        <h2>Login Conta</h2>
+        <form>
+          <label for="email">Email</label>
+          <input type="email" name="email" id="email">
+          <label for="password">Senha</label>
+          <input type="password" name="password" id="password">
+          <div class="split">
+            <button>Login</button>
+            <a href="#/perdeu">Recuperar Senha</a>
+          </div>
+        </form>
+      </section>
+
+      <section id="perdeu" data-role="public">
+        <h2>Perdeu a senha?</h2>
+        <form>
+          <label for="email-perdeu">Email</label>
+          <input type="email" name="email" id="email-perdeu">
+          <button>Esqueci a Senha</button>
+        </form>
+      </section>
+
+      <section id="resetar" data-role="public">
+        <h2>Resetar Senha</h2>
+        <form>
+          <label for="new_password">Email</label>
+          <input type="password" name="new_password" id="new_password">
+          <input type="hidden">
+          <button>Resetar Senhar</button>
+        </form>
+      </section>
+
+      <section id="criar-conta" data-role="public">
+        <h2>Criar Conta</h2>
+        <form>
+          <label for="username">Username</label>
+          <input type="text" name="username" id="username">
+          <label for="email-criar">Email</label>
+          <input type="email" name="email" id="email-criar">
+          <label for="name">Nome</label>
+          <input type="text" name="name" id="name">
+          <label for="password-criar">Senha</label>
+          <input type="password" name="password" id="password-criar">
+          <button>Criar Conta</button>
+        </form>
+      </section>
+
+      <section id="criar-curso" data-role="admin">
+        <div class="render"></div>
+        <form>
+          <label for="slug">Slug</label>
+          <input type="text" name="slug" id="slug">
+          <label for="title">Título</label>
+          <input type="text" name="title" id="title">
+          <label for="description">Descrição</label>
+          <input type="text" name="description" id="description">
+          <label for="lessons">Aulas</label>
+          <input type="number" name="lessons" id="lessons">
+          <label for="hours">Horas</label>
+          <input type="number" name="hours" id="hours">
+          <button>Criar/Atualizar Curso</button>
+        </form>
+      </section>
+
+      <section id="criar-aula" data-role="admin">
+        <div class="render"></div>
+        <form>
+          <label for="course-slug">Curso</label>
+          <input type="text" name="courseSlug" id="course-slug">
+          <label for="lesson-slug">Slug</label>
+          <input type="text" name="slug" id="lesson-slug">
+          <label for="lesson-title">Título</label>
+          <input type="text" name="title" id="lesson-title">
+          <label for="lesson-description">Descrição</label>
+          <input type="text" name="description" id="lesson-description">
+          <label for="seconds">Segundos</label>
+          <input type="number" name="seconds" id="seconds">
+          <label for="order">Ordem</label>
+          <input type="number" name="order" id="order">
+          <label for="free">Gratuita</label>
+          <input type="number" name="free" id="free" value="0">
+          <label for="file">Vídeo</label>
+          <input type="file" name="file" id="file">
+          <label for="video">Vídeo Path</label>
+          <input type="text" name="video" id="video">
+          <button>Criar/Atualizar Curso</button>
+        </form>
+      </section>
+
+      <section id="cursos" data-role="user">
+        <div class="render"></div>
+      </section>
+      <section id="curso" data-role="user">
+        <div class="render"></div>
+      </section>
+      <section id="aula" data-role="user">
+        <div class="render"></div>
+      </section>
+      <section id="certificados" data-role="user">
+        <div class="render"></div>
+      </section>
+
+      <section id="usuarios" data-role="admin">
+        <form>
+          <label for="s">Buscar:</label>
+          <input type="text" name="s" id="s">
+          <label for="page">Página:</label>
+          <input type="number" name="page" id="page" value="1">
+          <button class="hidden">Buscar</button>
+        </form>
+      </section>
+    </div>
+    <style>
     * {
       box-sizing: border-box;
-      font-family: monospace;
     }
 
+    html {
+      --font: "Cardo", serif;
+      --black: black;
+      --gray-1: #171717;
+      --gray-2: #222;
+      --gray-3: #333;
+      --gray-4: #777;
+      --gray-5: #aaa;
+      --gray-6: #ccc;
+      --gray-7: #ececec;
+      --white: white;
+      --gradient-1: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.05),
+        rgba(255, 255, 255, 0.025)
+      );
+      --gradient-2: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.1),
+        rgba(255, 255, 255, 0.05)
+      );
+      --gradient-3: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.15),
+        rgba(255, 255, 255, 0.1)
+      );
+    }
     body {
-      background: black;
-      color: white;
+      margin-bottom: 600px;
+      font-family: var(--font);
+      background: var(--black);
+      color: var(--white);
       font-size: 1.125rem;
     }
-
-    form,
-    pre {
-      max-width: 600px;
-      padding: 1rem;
-      margin: 0 auto;
-      overflow: auto;
+    ul,
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0px;
+      padding: 0px;
     }
-
+    h1 {
+      text-align: center;
+      margin: 2rem 0;
+      font-size: 3rem;
+    }
+    h2 {
+      margin-bottom: 1.5rem;
+    }
+    a {
+      color: var(--gray-4);
+    }
+    .container {
+      max-width: 33rem;
+      padding: 0.5rem;
+      margin: 0 auto 6rem auto;
+    }
+    section > form {
+      display: grid;
+      grid-template-columns: 6rem 1fr;
+      gap: 1rem 0.5rem;
+      align-items: center;
+      margin-left: -7rem;
+      margin-bottom: 2rem;
+    }
     input,
-    button {
+    label {
       display: block;
       width: 100%;
+      font-size: 1rem;
+      border: 1px solid var(--gray-2);
+      box-shadow: inset 0 0 0 2px var(--black);
       padding: 0.75rem;
-      margin: 0.5rem 0 1rem 0;
-      border-radius: 8px;
-      color: white;
-      border: 1px solid #222;
+      font-family: sans-serif;
+      border-radius: 100px;
+      color: var(--gray-5);
+      background: var(--gradient-1);
     }
-
-    input {
-      background: linear-gradient(to bottom, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.025));
+    label {
+      font-size: 0.85rem;
+      background: var(--gradient-2);
     }
-
     input:focus {
-      outline: white;
-      border-color: white;
+      outline: none;
+      border-color: var(--white);
     }
-
-    button {
-      background: linear-gradient(to bottom, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+    form button,
+    form .split {
+      grid-column: 2;
+    }
+    .split {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+    @media (width < 47rem) {
+      section > form {
+        margin-left: 0;
+      }
+    }
+    @media (width < 28rem) {
+      section > form {
+        grid-template-columns: 5rem 1fr;
+        gap: 0.5rem;
+      }
+      label {
+        font-size: 0.75rem;
+      }
+      form .split {
+        flex-direction: column;
+        align-items: start;
+      }
+    }
+    button,
+    .btn,
+    select {
+      font-size: 1rem;
+      display: block;
+      width: max-content;
+      min-width: 160px;
+      padding: 0.75rem 1.5rem;
+      appearance: none;
+      font-family: sans-serif;
+      border-radius: 100px;
+      color: var(--white);
+      border: 1px solid var(--gray-2);
+      background: var(--gradient-2);
+      box-shadow: inset 0 0 0 2px var(--black);
+      text-decoration: none;
       cursor: pointer;
     }
+    button:hover,
+    .btn:hover,
+    select:hover {
+      border-color: var(--gray-3);
+      background: var(--gradient-3);
+    }
+    button:focus,
+    .btn:focus {
+      outline: none;
+      border-color: var(--white);
+    }
+    nav {
+      margin-bottom: 2rem;
+    }
+    nav ul {
+      display: flex;
+      justify-content: space-around;
+      list-style: none;
+      border: 1px solid var(--gray-2);
+      border-radius: 100px;
+      padding: 2px;
+    }
+    nav li {
+      display: block;
+      flex: 1;
+    }
+    nav a {
+      font-size: 1rem;
+      width: 100%;
+      padding: 0.5rem;
+      text-align: center;
+      font-family: var(--font);
+      text-decoration: none;
+      display: block;
+      color: var(--white);
+      background: var(--gradient-2);
+    }
+    nav li:first-child a {
+      border-top-left-radius: 100px;
+      border-bottom-left-radius: 100px;
+    }
+    nav li:last-child a {
+      border-top-right-radius: 100px;
+      border-bottom-right-radius: 100px;
+    }
+    nav a:hover,
+    nav a.active {
+      background: var(--gradient-3);
+    }
+    select {
+      width: 100%;
+      margin-bottom: 2px;
+    }
+    section,
+    .render {
+      animation: slideIn 0.3s ease-out forwards;
+    }
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    [data-role] {
+      display: none;
+    }
+    [data-role].ativo {
+      display: block;
+    }
+    .ok,
+    .fail {
+      padding: 0.5rem 1rem;
+      animation: slideIn 0.3s ease-out forwards;
+      border-radius: 100px;
+      width: max-content;
+      background: #211100;
+      color: #ffca16;
+      grid-column: 2;
+    }
+    .ok {
+      background: #0c281c;
+      color: #3dd78c;
+    }
+    </style>
 
-    button:hover {
-      background: linear-gradient(to bottom, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+    <script>
+    const routes = document.querySelectorAll("section[data-role]")
+
+    const navs = document.querySelectorAll("nav[data-role]")
+    function handleUserNav(user) {
+      for (const nav of navs) {
+        if (nav.dataset.role === user) {
+          nav.classList.add("ativo")
+        } else {
+          nav.classList.remove("ativo")
+        }
+      }
     }
 
-    #logout {
-      max-width: 200px;
-      margin: 0 auto;
-    }
-  </style>
-
-  <form id="upload">
-    <input type="file" name="file" multiple>
-    <button>Upload</button>
-  </form>
-
-  <form id="login">
-    <label for="email">Email</label>
-    <input type="email" name="email" id="email" value="caique@email.com" />
-    <label for="password">Senha</label>
-    <input type="password" name="password" id="password" value="Aisdecopas93@" />
-    <button>Logar</button>
-  </form>
-
-  <form id="update-password">
-    <label for="password">Senha</label>
-    <input type="password" name="password" value="Aisdecopas93@" />
-    <label for="new_password">Nova Senha</label>
-    <input type="password" name="new_password" value="Aisdecopas93@@" />
-    <button>Atualizar Senha</button>
-  </form>
-
-  <form id="forgot-password">
-    <label for="email">Email</label>
-    <input type="email" name="email" value="caique@email.com" />
-    <button>Esqueci a Senha</button>
-  </form>
-
-  <form id="reset-password">
-    <label for="new_password">Nova Senha</label>
-    <input type="new_password" name="new_password" value="123456789" />
-    <label for="token">Token</label>
-    <input type="token" name="token" value="123456789" />
-    <button>Resetar Senha</button>
-  </form>
-
-  <button id="logout">Sair</button>
-  <pre id="result"></pre>
-
-  <script>
-    const login = document.querySelector("#login")
-    const updatePassword = document.querySelector("#update-password")
-    const forgotPassword = document.querySelector("#forgot-password")
-    const resetPassword = document.querySelector("#reset-password")
-    const result = document.querySelector("#result")
-    const logout = document.querySelector("#logout")
-    const upload = document.querySelector("#upload")
-
-    upload.addEventListener("submit", async (e) => {
-      e.preventDefault()
-      const input = upload.querySelector("input[type=file]")
-      const files = input.files
-      if (!files || files.length === 0) return
-      for (const file of files) {
-        await fetch("/files", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/octet-stream",
-            "x-filename": file.name
-          },
-          body: file,
-        })
+    let user
+    async function getUser() {
+      user = "public"
+      try {
+        const response = await fetch("http://localhost:3000/auth/session")
+        const body = await response.json()
+        if (!response.ok) throw new Error()
+        user = body.role
+        return user
+      } catch (error) {
+        return user
+      } finally {
+        handleUserNav(user)
       }
-    })
-
-    login.addEventListener("submit", async (e) => {
-      e.preventDefault()
-      const data = new FormData(login)
-      const response = await fetch("/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(Object.fromEntries(data)),
-      })
-      const body = await response.json()
-      result.innerText = JSON.stringify(body, null, 2)
-      if (response.ok) {
-        window.location.reload()
-      }
-    })
-
-    updatePassword.addEventListener("submit", async (e) => {
-      e.preventDefault()
-      const data = new FormData(updatePassword)
-      const response = await fetch("/auth/password/update", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(Object.fromEntries(data)),
-      })
-      const body = await response.json()
-      result.innerText = JSON.stringify(body, null, 2)
-      if (response.ok) {
-        window.location.reload()
-      }
-    })
-
-    forgotPassword.addEventListener("submit", async (e) => {
-      e.preventDefault()
-      const data = new FormData(forgotPassword)
-      const response = await fetch("/auth/password/forgot", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(Object.fromEntries(data)),
-      })
-      const body = await response.json()
-      result.innerText = JSON.stringify(body, null, 2)
-      if (response.ok) {
-        window.location.reload()
-      }
-    })
-
-    resetPassword.addEventListener("submit", async (e) => {
-      e.preventDefault()
-      const data = new FormData(resetPassword)
-      const response = await fetch("/auth/password/reset", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(Object.fromEntries(data)),
-      })
-      const body = await response.json()
-      result.innerText = JSON.stringify(body, null, 2)
-      if (response.ok) {
-        window.location.reload()
-      }
-    })
-
-    logout.addEventListener("click", async (e) => {
-      e.preventDefault()
-      const response = await fetch("/auth/logout", {
-        method: "DELETE",
-      })
-      if (response.ok) {
-        window.location.reload()
-      }
-    })
-
-    async function autenticado () {
-      const response = await fetch("/auth/session")
-      const body = await response.json()
-      result.innerText = JSON.stringify(body, null, 2)
     }
 
-    autenticado();
-  </script>
-</body>
+    async function router() {
+      if (user === undefined) user = await getUser()
+      console.log(user)
+      const r = location.hash
+        .replace("#", "")
+        .split("/")
+        .filter(Boolean)
+        .shift()
+      const route = document.getElementById(r)
+      routes.forEach((item) => item.classList.remove("ativo"))
+      if (route) {
+        if (user !== route.dataset.role) location.hash = "/login"
+        route.classList.add("ativo")
+      }
+    }
+    window.addEventListener("DOMContentLoaded", router)
+    window.addEventListener("hashchange", router)
 
+    // FORMULÁRIOS
+    async function sendForm(method, url, id, callback) {
+      const form = document.querySelector("#" + id + " form")
+      form?.addEventListener("submit", async (e) => {
+        e.preventDefault()
+        const data = new FormData(form)
+        let response
+        let body = {}
+        const badge = document.createElement("div")
+        try {
+          response = await fetch(`http://localhost:3000${url}`, {
+            method: method,
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(Object.fromEntries(data)),
+          })
+          body = await response.json()
+          if (!response.ok) throw new Error()
+          if (typeof callback === "function") callback(response, body)
+          badge.innerText = `${response.status}`
+          badge.classList.add("ok")
+        } catch {
+          badge.innerText = `${response.status} - ${body?.title}`
+          badge.classList.add("fail")
+          console.log(response)
+        } finally {
+          form.append(badge)
+          setTimeout(() => {
+            badge?.remove()
+          }, 1500)
+        }
+      })
+    }
+
+    sendForm("POST", "/auth/login", "login", async () => {
+      user = await getUser()
+      if (user === "user") location.hash = "/cursos"
+      if (user === "admin") location.hash = "/criar-curso"
+    })
+
+    sendForm("POST", "/auth/user", "criar-conta", () => {
+      location.hash = "/login"
+    })
+    </script>
+  </body>
 </html>

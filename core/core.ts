@@ -8,6 +8,7 @@ import { Database } from "./database.ts"
 import { customRequest } from "./http/custom-request.ts"
 import { customResponse } from "./http/custom-response.ts"
 import { bodyJSON } from "./middleware/body-json.ts"
+import { cors } from "./middleware/cors.ts"
 import { Router } from "./router.ts"
 import { RouteError } from "./utils/route-error.ts"
 
@@ -18,7 +19,7 @@ export class Core {
 
   constructor() {
     this.router = new Router()
-    this.router.use([bodyJSON])
+    this.router.use([cors, bodyJSON])
     this.db = new Database("./lms.sqlite")
     this.server = createServer(this.handler.bind(this))
   }
@@ -32,6 +33,11 @@ export class Core {
         await middleware(req, res)
       }
 
+      if (req.method === "OPTIONS") {
+        response.statusCode = 204
+        return response.end()
+      }
+
       const matched = this.router.find(req.method ?? "", req.pathname)
       if (!matched) {
         throw new RouteError(404, "Não encontrado")
@@ -41,6 +47,7 @@ export class Core {
       for (const middleware of route.middlewares) {
         await middleware(req, res)
       }
+
       await route.handler(req, res)
     } catch (error) {
       response.setHeader("content-type", "application/problem+json")

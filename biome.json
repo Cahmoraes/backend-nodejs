@@ -5,6 +5,11 @@
 		"clientKind": "git",
 		"useIgnoreFile": false
 	},
+	"html": {
+		"formatter": {
+			"enabled": true
+		}
+	},
 	"files": {
 		"ignoreUnknown": false
 	},
@@ -17,7 +22,8 @@
 		"rules": {
 			"recommended": true,
 			"suspicious": {
-				"noExplicitAny": "off"
+				"noExplicitAny": "off",
+				"useIterableCallbackReturn": "off"
 			},
 			"complexity": {
 				"useLiteralKeys": "off"

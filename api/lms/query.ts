@@ -1,5 +1,5 @@
-import type { StatementResultingChanges } from 'node:sqlite'
-import { Query } from '../../core/utils/abstract.ts'
+import type { StatementResultingChanges } from "node:sqlite"
+import { Query } from "../../core/utils/abstract.ts"
 
 export interface CourseData {
   id: number
@@ -11,7 +11,7 @@ export interface CourseData {
   created: string
 }
 
-type CourseCreate = Omit<CourseData, 'id' | 'created'>
+type CourseCreate = Omit<CourseData, "id" | "created">
 
 export interface LessonData {
   id: number
@@ -26,7 +26,7 @@ export interface LessonData {
   created: string
 }
 
-export type LessonCreate = Omit<LessonData, 'id' | 'course_id' | 'created'> & {
+export type LessonCreate = Omit<LessonData, "id" | "course_id" | "created"> & {
   courseSlug: string
 }
 
@@ -69,14 +69,14 @@ export class LmsQuery extends Query {
       .query(
         /*sql*/
         `
-          INSERT OR IGNORE INTO "lessons"
-          ("course_id", "slug", "title", "seconds", 
-            "video", "description", "order", "free")
-          VALUES (
-            (
-              SELECT "id" FROM "courses" WHERE "slug" = ?
-
-            ), ?, ?, ?, ?, ?, ? , ?)
+          INSERT INTO "courses"
+          ("slug", "title", "description", "lessons", "hours")
+          VALUES (?, ?, ?, ?, ?)
+          ON CONFLICT ("slug") DO UPDATE SET
+          "title" = excluded."title",
+          "description" = excluded."description",
+          "lessons" = excluded."lessons",
+          "hours" = excluded."hours"
         `,
       )
       .run(slug, title, description, lessons, hours)
@@ -232,6 +232,24 @@ export class LmsQuery extends Query {
         /*sql*/ `
           DELETE FROM 
             "lessons_completed"
+          WHERE
+            "user_id" = ?
+          AND
+            "course_id" = ?
+        `,
+      )
+      .run(userId, courseId)
+  }
+
+  public deleteCertificate(
+    userId: number,
+    courseId: number,
+  ): StatementResultingChanges {
+    return this.db
+      .query(
+        /*sql*/ `
+          DELETE FROM 
+            "certificates"
           WHERE
             "user_id" = ?
           AND

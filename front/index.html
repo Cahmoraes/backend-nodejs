@@ -84,7 +84,7 @@
         <form>
           <label for="new_password">Email</label>
           <input type="password" name="new_password" id="new_password">
-          <input type="hidden">
+          <input type="hidden" name="token">
           <button>Resetar Senhar</button>
         </form>
       </section>
@@ -140,8 +140,8 @@
           <input type="number" name="free" id="free" value="0">
           <label for="file">Vídeo</label>
           <input type="file" name="file" id="file">
-          <label for="video">Vídeo Path</label>
-          <input type="text" name="video" id="video">
+          <label for="video-path">Vídeo Path</label>
+          <input type="text" name="video" id="video-path">
           <button>Criar/Atualizar Curso</button>
         </form>
       </section>
@@ -394,9 +394,182 @@
       background: #0c281c;
       color: #3dd78c;
     }
+
+    /* CURSO */
+    #curso {
+      margin-top: 2rem;
+    }
+    .curso-item {
+      padding: 0 1rem 2rem 1rem;
+      border-bottom: 2px dashed var(--gray-1);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      text-align: center;
+      text-wrap: balance;
+    }
+    .curso-item > *:not(.btn) {
+      padding: 0.5rem;
+    }
+    .curso-item span:first-of-type {
+      border-right: 1px solid var(--gray-1);
+      justify-self: end;
+    }
+    .curso-item span:last-of-type {
+      border-left: 1px solid var(--gray-1);
+      justify-self: start;
+    }
+    .curso-item p,
+    .curso-item h2,
+    .curso-item .btn {
+      grid-column: 1 / -1;
+    }
+    .curso-item .btn {
+      margin-top: 1rem;
+      justify-self: center;
+    }
+    .curso-item h2 {
+      margin: 1rem 0 0 0;
+    }
+    .curso-item p,
+    .curso-item span {
+      color: var(--gray-5);
+    }
+
+    /* AULAS CURSO */
+    .curso-aulas {
+      list-style: none;
+      margin-top: 1rem;
+    }
+
+    .curso-aulas li a {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 1rem;
+      padding: 0.75rem;
+      align-items: center;
+      color: var(--gray-6);
+    }
+
+    .curso-aulas li:nth-of-type(even) a {
+      background: #111;
+    }
+
+    .curso-aulas li a:hover {
+      background: var(--gray-2);
+    }
+
+    .curso-aulas li a span {
+      color: var(--gray-4);
+      font-size: 0.75rem;
+      font-family: monospace;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .curso-aulas .status {
+      display: block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      border: 1px solid var(--gray-3);
+    }
+
+    .curso-aulas .status.completa {
+      background: linear-gradient(rgb(172, 239, 117), rgb(23, 232, 128));
+    }
+
+    #resetar-curso button {
+      margin: 1rem auto;
+    }
+
+    /* AULA */
+    #aula h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0px;
+    }
+
+    #breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--gray-4);
+    }
+
+    #breadcrumb a {
+      color: var(--gray-4);
+      text-decoration: none;
+      font-family: sans-serif;
+      font-size: 0.75rem;
+    }
+
+    #video {
+      aspect-ratio: 16 / 9;
+      margin: 1rem auto;
+      border-radius: 12px;
+      border: 1 px solid var(--gray-1);
+      overflow: hidden;
+    }
+
+    video {
+      aspect-ratio: 16 / 9;
+      max-width: 100%;
+    }
+
+    #aula-nav {
+      display: grid;
+      grid-template-columns: 100px 1fr 100px;
+      justify-content: space-between;
+      justify-items: center;
+    }
+
+    #aula-nav a,
+    #aula-nav button {
+      padding: 0.5rem;
+      min-width: 70px;
+      font-size: 0.75rem;
+      line-height: 1;
+    }
+
+    /*CERTIFICADOS*/
+    #certificados ul {
+      list-style: none;
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    #certificados ul li a {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      padding: 1rem;
+      align-items: center;
+      font-family: var(--font);
+    }
+
+    select {
+      margin-bottom: 1rem;
+    }
     </style>
 
     <script>
+    const API_URL = `http://${location.hostname}:3000`
+
+    function esc(v) {
+      return String(v)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;")
+    }
+
+    function secToMin(seconds) {
+      const mm = String(Math.floor(seconds / 60)).padStart(2, "0")
+      const ss = String(Math.floor(seconds % 60)).padStart(2, "0")
+      return `${mm}:${ss}`
+    }
+
     const routes = document.querySelectorAll("section[data-role]")
 
     const navs = document.querySelectorAll("nav[data-role]")
@@ -414,12 +587,14 @@
     async function getUser() {
       user = "public"
       try {
-        const response = await fetch("http://localhost:3000/auth/session")
+        const response = await fetch(`${API_URL}/auth/session`, {
+          credentials: "include",
+        })
         const body = await response.json()
         if (!response.ok) throw new Error()
         user = body.role
         return user
-      } catch (error) {
+      } catch {
         return user
       } finally {
         handleUserNav(user)
@@ -436,30 +611,271 @@
         .shift()
       const route = document.getElementById(r)
       routes.forEach((item) => item.classList.remove("ativo"))
+      if (!route && typeof data[r] === "function") {
+        data[r]()
+        return
+      }
       if (route) {
         if (user !== route.dataset.role) location.hash = "/login"
         route.classList.add("ativo")
+        if (typeof data[r] === "function") {
+          data[r](route)
+          return
+        }
       }
     }
     window.addEventListener("DOMContentLoaded", router)
     window.addEventListener("hashchange", router)
 
+    async function getData(url, callback) {
+      const response = await fetch(`${API_URL}${url}`, {
+        credentials: "include",
+      })
+      const body = await response.json()
+      callback(body, response)
+    }
+
+    function renderResetCourseButton(courseId) {
+      setTimeout(() => {
+        sendForm("DELETE", "/lms/course/reset", "resetar-curso", () => {
+          location.reload()
+        })
+      }, 50)
+      return /*html*/ `
+        <div id="resetar-curso">
+          <form>  
+            <input name="courseId" type="hidden" value="${courseId}">
+            <button>Resetar</button>
+          </form>
+        </div>
+      `
+    }
+
+    function renderCompleteButton(courseId, lessonId) {
+      setTimeout(() => {
+        sendForm("POST", "/lms/lesson/complete", "completar", () => {
+          document.getElementById("completar").innerHTML = "<span></span>"
+        })
+      }, 50)
+      return /*html*/ `
+        <div id="completar">
+          <form>  
+            <input name="courseId" type="hidden" value="${courseId}">
+            <input name="lessonId" type="hidden" value="${lessonId}">
+            <button>Completar</button>
+          </form>
+        </div>
+      `
+    }
+
+    const data = {
+      cursos: (route) => {
+        getData("/lms/courses", (courses) => {
+          const render = route.querySelector(".render")
+          render.innerHTML = ""
+          let html = ""
+          for (const course of courses) {
+            html += /*html*/ `
+              <div class="curso-item">
+                <h2>${esc(course.title)}</h2>
+                <p>${esc(course.description)}</p>
+                <span>Aulas: ${esc(course.lessons)}</span>
+                <span>Horas: ${esc(course.hours)}</span>
+                <a class="btn" href="#/curso/${esc(course.slug)}">
+                  ${esc(course.title)}
+                </a>
+              </div>
+            `
+          }
+          render.innerHTML = html
+        })
+      },
+      curso: (route) => {
+        console.log(route)
+        const [_, curso] = location.hash
+          .replace("#", "")
+          .split("/")
+          .filter(Boolean)
+        console.log(curso)
+        if (!curso) return
+        let html = ""
+        getData(`/lms/course/${curso}`, (data) => {
+          const { course, lessons, completed } = data
+          const render = route.querySelector(".render")
+          html = /*html*/ `
+            <div class="curso-item">
+              <h2>${esc(course.title)}</h2>
+              <p>${esc(course.description)}</p>
+              <span>Aulas: ${esc(course.lessons)}</span>
+              <span>Horas: ${esc(course.hours)}</span>
+              <a class="btn" href="#/curso/${esc(course.slug)}">
+                ${esc(course.title)}
+              </a>
+            </div>
+          `
+          html += "<ul class='curso-aulas'>"
+          for (const lesson of lessons) {
+            const isCompleted = completed.some((x) => x.lesson_id === lesson.id)
+            html += /*html*/ `
+              <li>
+                   <a href="#/aula/${esc(course.slug)}/${esc(lesson.slug)}">
+                    ${esc(lesson.title)}
+                    <span>
+                      <span>
+                        ${secToMin(lesson.seconds)}
+                        <span class="status ${isCompleted ? "completa" : ""}"> 
+                        </span>
+                      </span>  
+                    </span>
+                  </a>
+              </li>
+            `
+          }
+          html += `</ul>
+          ${completed.length > 0 ? renderResetCourseButton(course.id) : ""}
+          `
+          render.innerHTML = html
+          console.log(data)
+        })
+      },
+      aula: (route) => {
+        const [_, curso, aula] = location.hash
+          .replace("#", "")
+          .split("/")
+          .filter(Boolean)
+        let html = ""
+        getData(`/lms/lesson/${curso}/${aula}`, (lesson) => {
+          if (!curso || !aula) return
+          const render = route.querySelector(".render")
+          render.innerHTML = ""
+          html = /*html*/ `
+            <div>
+              <h2>${esc(lesson.title)}</h2>
+              <div id="breadcrumb">
+                <a href="#/cursos">Cursos</a> >
+                <a href="#/cursos/${curso}">${curso}</a>  
+              </div>
+              <div id="video">
+                <video poster="" preload="metadata" src="/${lesson.video}" controls></video>
+              </div>
+              <nav id="aula-nav">
+                ${
+                  lesson.prev
+                    ? `<a class="btn" href="${esc(`#/aula/${curso}/${lesson.prev}`)}">Anterior</a>`
+                    : `<span></span>`
+                }
+                 ${
+                   lesson.completed
+                     ? `<span></span>`
+                     : renderCompleteButton(lesson.course_id, lesson.id)
+                 }
+                ${
+                  lesson.next
+                    ? `<a class="btn" href="${esc(`#/aula/${curso}/${lesson.next}`)}">Próxima</a>`
+                    : `<span></span>`
+                }
+              </nav>
+            </div>
+          `
+          render.innerHTML = html
+        })
+      },
+      certificados: (route) => {
+        getData("/lms/certificates", (certificates) => {
+          if (!Array.isArray(certificates)) return
+          const render = route.querySelector(".render")
+          render.innerHTML = ""
+          let html = "<ul>"
+          for (const certificate of certificates) {
+            html += /*html*/ `
+              <li>
+                <a class="btn" target="_blank" href="${API_URL}/lms/certificate/${certificate.id}">${esc(certificate.title)}
+                <span>
+                  ${certificate.completed
+                    .slice(0, 10)
+                    .split("-")
+                    .reverse()
+                    .join("/")}
+                </span> 
+                </a>
+              </li>
+            `
+          }
+          html += "</ul>"
+          render.innerHTML = html
+        })
+      },
+      sair: async () => {
+        console.log("sair")
+        await fetch("/auth/logout", {
+          method: "DELETE",
+        })
+        user = "public"
+        location.hash = "/login"
+        handleUserNav(user)
+      },
+      resetar: () => {
+        const query = location.hash.split("=")
+        if (query[1]) {
+          const token = document.querySelector('input[name="token"]')
+          if (token) token.value = query[1]
+        }
+      },
+      ["criar-curso"]: async (route) => {
+        getData("/lms/courses", (courses) => {
+          const render = route.querySelector(".render")
+          const form = route.querySelector("form")
+          render.innerHTML = ""
+          const select = document.createElement("select")
+          select.name = "courses-select"
+          select.add(new Option("Selecionar Curso", null))
+          let i = 0
+          for (const course of courses) {
+            select.add(new Option(course.slug, i))
+            i++
+          }
+          i = 0
+          select.addEventListener("change", (e) => {
+            e.preventDefault()
+            const course = courses[select.value]
+            for (const key in course) {
+              const input = form.querySelector(`[name="${key}"]`)
+              if (input) input.value = course[key]
+              console.log(input)
+            }
+            console.log(course)
+          })
+          render.append(select)
+        })
+      },
+    }
+
     // FORMULÁRIOS
     async function sendForm(method, url, id, callback) {
-      const form = document.querySelector("#" + id + " form")
+      const form = document.querySelector(`#${id} form`)
       form?.addEventListener("submit", async (e) => {
         e.preventDefault()
-        const data = new FormData(form)
+        const formData = new FormData(form)
+        const data = {}
+        for (const [key, value] of formData.entries()) {
+          const input = form.querySelector(`[name="${key}"]`)
+          if (input?.type === "number") {
+            data[key] = Number(value)
+          } else {
+            data[key] = value
+          }
+        }
         let response
         let body = {}
         const badge = document.createElement("div")
         try {
-          response = await fetch(`http://localhost:3000${url}`, {
+          response = await fetch(`${API_URL}${url}`, {
             method: method,
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify(Object.fromEntries(data)),
+            credentials: "include",
+            body: JSON.stringify(data),
           })
           body = await response.json()
           if (!response.ok) throw new Error()
@@ -470,7 +886,6 @@
           badge.innerText = `${response.status} - ${body?.title}`
           badge.classList.add("fail")
           console.log(response)
-          user = body.role
         } finally {
           form.append(badge)
           setTimeout(() => {
@@ -485,9 +900,23 @@
       if (user === "user") location.hash = "/cursos"
       if (user === "admin") location.hash = "/criar-curso"
     })
-
     sendForm("POST", "/auth/user", "criar-conta", () => {
       location.hash = "/login"
+    })
+    sendForm("POST", "/auth/password/forgot", "perdeu")
+    sendForm("POST", "/auth/password/reset", "resetar")
+    sendForm("POST", "/lms/course", "criar-curso")
+
+    // Previne reload em links com hash
+    document.addEventListener("click", (e) => {
+      const link = e.target.closest("a[href^='#']")
+      if (link) {
+        e.preventDefault()
+        const hash = link.getAttribute("href")
+        if (hash && hash !== location.hash) {
+          location.hash = hash
+        }
+      }
     })
     </script>
   </body>

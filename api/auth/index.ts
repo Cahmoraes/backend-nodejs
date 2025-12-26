@@ -112,7 +112,7 @@ export class AuthApi extends Api {
         ip: req.ip,
         ua: req.headers["user-agent"] ?? "",
       })
-      const resetLink = `${req.baseurl}/password/reset/?token=${token}`
+      const resetLink = `${req.baseurl}/front/resetar/?token=${token}`
       const mailContent = {
         to: user.email,
         subject: "Password Reset",
@@ -121,7 +121,6 @@ export class AuthApi extends Api {
       console.log(mailContent)
       res.status(200).json({ title: "verifique seu email" })
     },
-
     passwordReset: async (req, res) => {
       const { new_password, token } = {
         token: v.string(req.body.token),

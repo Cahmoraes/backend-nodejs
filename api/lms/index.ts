@@ -173,9 +173,19 @@ export class LmsApi extends Api {
       }
       const userId = req.session.user_id
       const { courseId } = { courseId: v.number(req.body.courseId) }
-      const writeResult = this.query.deleteLessonsCompleted(userId, courseId)
-      if (!writeResult.changes) {
+      const writeResultLessons = this.query.deleteLessonsCompleted(
+        userId,
+        courseId,
+      )
+      if (!writeResultLessons.changes) {
         throw new RouteError(404, "erro ao resetar curso")
+      }
+      const writeResultCertificate = this.query.deleteCertificate(
+        req.session.user_id,
+        courseId,
+      )
+      if (!writeResultCertificate.changes) {
+        throw new RouteError(400, "erro ao deletar certificado")
       }
       res.status(200).json({
         title: "curso resetado",
@@ -187,9 +197,6 @@ export class LmsApi extends Api {
       }
       const userId = req.session.user_id
       const certificates = this.query.selectCertificates(userId)
-      if (!certificates.length) {
-        throw new RouteError(400, "nenhum certificado encontrado")
-      }
       res.status(200).json(certificates)
     },
     getCertificate: (req, res) => {

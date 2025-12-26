@@ -19,7 +19,7 @@ export interface ResetTokenOutput {
 export class SessionService extends CoreProvider {
   private static TTLSec = 60 * 60 * 24 * 15
   private static TTLSec5days = 60 * 60 * 24 * 15
-  public static COOKIE_SID_KEY = "__Secure-sid"
+  public static COOKIE_SID_KEY = "sid"
 
   query = new AuthQuery(this.db)
 
@@ -37,7 +37,7 @@ export class SessionService extends CoreProvider {
   }
 
   private sidCookie(sid: string, maxAge?: number): string {
-    return `${SessionService.COOKIE_SID_KEY}=${sid}; Path=/; Max-Age=${maxAge ?? SessionService.TTLSec}; HttpOnly; Secure; SameSite=Lax`
+    return `${SessionService.COOKIE_SID_KEY}=${sid}; Path=/; Max-Age=${maxAge ?? SessionService.TTLSec}; HttpOnly; SameSite=Lax`
   }
 
   public validate(sid: string) {

@@ -167,6 +167,7 @@
           <input type="number" name="page" id="page" value="1">
           <button class="hidden">Buscar</button>
         </form>
+        <div class="render"></div>
       </section>
     </div>
     <style>
@@ -550,6 +551,38 @@
     select {
       margin-bottom: 1rem;
     }
+
+    /* USER SEARCH */
+    #usuarios ul {
+      margin-top: 1rem;
+      list-style: none;
+    }
+
+    #usuarios li {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 1rem;
+      font-size: 0.75rem;
+      border-bottom: 2px dashed var(--gray-1);
+      padding: 0.5rem 0;
+      color: var(--gray-5);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    #pages {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    #pages button {
+      min-width: max-content;
+      padding: 0.25rem 0.75rem;
+    }
     </style>
 
     <script>
@@ -753,7 +786,7 @@
               <h2>${esc(lesson.title)}</h2>
               <div id="breadcrumb">
                 <a href="#/cursos">Cursos</a> >
-                <a href="#/cursos/${curso}">${curso}</a>  
+                <a href="#/curso/${curso}">${curso}</a>  
               </div>
               <div id="video">
                 <video poster="" preload="metadata" src="/${lesson.video}" controls></video>
@@ -848,6 +881,84 @@
           render.append(select)
         })
       },
+      ["criar-aula"]: (route) => {
+        getData("/lms/lessons", (lessons) => {
+          console.log(lessons)
+          const render = route.querySelector(".render")
+          const form = route.querySelector("form")
+          render.innerHTML = ""
+          const select = document.createElement("select")
+          select.name = "lessons-select"
+          i = 0
+          for (const lesson of lessons) {
+            select.add(new Option(`${lesson.courseSlug} - ${lesson.slug}`, i))
+            i++
+          }
+          select.addEventListener("change", (e) => {
+            e.preventDefault()
+            const lesson = lessons[select.value]
+            for (const key in lesson) {
+              const input = form.querySelector(`[name="${key}"]`)
+              if (input) input.value = lesson[key]
+              console.log(input)
+            }
+            console.log(lesson)
+          })
+          render.append(select)
+        })
+      },
+      usuarios: (route) => {
+        const render = route.querySelector(".render")
+        getData("/auth/users/search", (users, response) => {
+          const total = parseInt(response.headers.get("x-total-count"), 10)
+          renderUsers(users, total, render)
+        })
+        const form = document.querySelector("#usuarios form")
+        form.addEventListener("submit", (e) => {
+          e.preventDefault()
+          const data = new FormData(form)
+          getData(
+            `/auth/users/search?=${data.get("s")}&page=${data.get("page")}`,
+            (users, response) => {
+              const total = parseInt(response.headers.get("x-total-count"), 10)
+              renderUsers(users, total, render)
+            },
+          )
+          console.log(data.get("s"))
+        })
+      },
+    }
+
+    function renderUsers(users, total, render) {
+      render.innerHTML = ""
+      html = "<ul>"
+      const pages = document.createElement("nav")
+      const form = document.querySelector("#usuarios form")
+      const page = document.getElementById("page")
+      pages.id = "pages"
+      const totalPages = Math.ceil(total / 5)
+      if (totalPages > 1) {
+        for (let i = 1; i <= totalPages; i++) {
+          const button = document.createElement("button")
+          button.innerHTML = i
+          button.addEventListener("click", () => {
+            page.value = i
+            form.requestSubmit()
+          })
+          pages.append(button)
+        }
+      }
+      for (const user of users) {
+        html += /*html*/ `
+          <li>
+            <span>${esc(user.name)}</span>  
+            <span>${esc(user.email)}</span>  
+          </li>
+        `
+      }
+      html += "</ul>"
+      render.innerHTML = html
+      render.append(pages)
     }
 
     // FORMULÁRIOS
@@ -907,15 +1018,37 @@
     sendForm("POST", "/auth/password/reset", "resetar")
     sendForm("POST", "/lms/course", "criar-curso")
 
-    // Previne reload em links com hash
-    document.addEventListener("click", (e) => {
-      const link = e.target.closest("a[href^='#']")
-      if (link) {
-        e.preventDefault()
-        const hash = link.getAttribute("href")
-        if (hash && hash !== location.hash) {
-          location.hash = hash
-        }
+    /* upload arquivo */
+    const lessonsForm = document.querySelector("#criar-aula form")
+    lessonsForm.addEventListener("submit", async (e) => {
+      e.preventDefault()
+      try {
+        const input = lessonsForm.querySelector("input[type=file]")
+        if (!input) return
+        const files = input.files
+        if (!files?.length) return
+        const responseFile = await fetch(`${API_URL}/files`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/octet-stream",
+            "x-filename": files[0].name,
+          },
+          body: files[0],
+        })
+        const upload = await responseFile.json()
+        const data = new FormData(lessonsForm)
+        data.set("video", upload.path)
+        console.log(upload.path)
+        const responseLesson = await fetch(`${API_URL}/lms/lesson`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(Object.fromEntries(data)),
+        })
+        if (responseLesson.ok) location.reload()
+      } catch (error) {
+        console.log(error)
       }
     })
     </script>

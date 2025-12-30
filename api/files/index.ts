@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto"
 import { createReadStream, createWriteStream, type Stats } from "node:fs"
 import { rename, rm, stat } from "node:fs/promises"
-import { extname, join } from "node:path"
+import path, { extname, join } from "node:path"
 import { pipeline } from "node:stream/promises"
 import type { Handler } from "../../core/router.ts"
 import { Api } from "../../core/utils/abstract.ts"
@@ -70,7 +70,7 @@ export class FilesApi extends Api {
       try {
         await pipeline(req, limitBytes(FilesApi.MAX_BYTES), writeStream)
         await rename(tempPath, writePath)
-        res.status(201).end("ok")
+        res.status(201).json({ path: writePath, name })
       } catch (error) {
         if (error instanceof RouteError) {
           throw new RouteError(error.status, error.message)

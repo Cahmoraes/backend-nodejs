@@ -49,6 +49,14 @@ export interface SelectedUserData {
   email: string
 }
 
+export interface SelectUsersData {
+  id: number
+  name: string
+  email: string
+  createdAt: string
+  total: number
+}
+
 export class AuthQuery extends Query {
   public insertUser({
     name,
@@ -234,5 +242,23 @@ export class AuthQuery extends Query {
         `,
       )
       .run(user_id)
+  }
+
+  public selectUsers(search = "", limit = 10, page = 1): SelectUsersData[] {
+    const s = `%${search.trim()}%`
+    const safeLimit = Math.min(100, limit)
+    const offset = (page - 1) * safeLimit
+    return this.db
+      .query(
+        /*sql*/ `
+          SELECT "id", "name", "email", "created",
+          COUNT("id") OVER() as "total"
+          FROM "users"
+          WHERE "name" LIKE ? OR "email" LIKE ?
+          ORDER BY "created" DESC
+          LIMIT ? OFFSET ?
+        `,
+      )
+      .all(s, s, safeLimit, offset) as unknown as SelectUsersData[]
   }
 }
